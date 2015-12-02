@@ -1,0 +1,10 @@
+Sep 16 11:29:37 cfc-sm18-acgplrf3 L4BUNCHER_M: FWK|ERROR|RTScheduler::schedule() catch an unknown exception during getStatus RTAction execution.
+Sep 16 11:29:37 cfc-sm18-acgplrf3 L4BUNCHER_M: FWK|ERROR|RTScheduler::schedule() catch an unknown exception during getAcquisition RTAction execution.
+Sep 16 11:29:37 cs-ccr-ofc1 OFC[12698]: OFC_INFO_MSG: Sep  8 2015 11:29:37.751663 -> src/OFBController.cpp -> main() -> line 1008 -> Last 250 iterations: lt61BpmPacks=0, lt64BpmPacks=0, lt67BpmPacks=1, mt67BpmPacks=0, mt70BpmPacks=0, mt73BpmPacks=0
+Sep 16 11:29:37 cfc-152-rln4pow1 Po_PLC_M[3782]: FWK|ERROR|Po_PLCGetPlcAcquisition: IEPLC (Po_PLC:cfp-152-rl4test) PLC is off/offline.((nil): 1s, 140us) Abort!!
+Sep 16 11:29:37 cfc-152-rln4pow1 Po_PLC_M[3782]: FWK|ERROR|Po_PLCGetPlcAcquisition: IEPLC (Po_PLC:cfp-152-rl4test) PLC is off/offline.((nil): 0s, 4558us) Abort!!
+Sep 16 11:29:37 cfc-sm18-acgplrf3 L4CHOPPER_M: FWK|ERROR|RTScheduler::schedule() catch an unknown exception during getSettings RTAction execution.
+Sep 16 11:29:37 cfc-sm18-acgplrf3 L4CHOPPER_M: FWK|ERROR|RTScheduler::schedule() catch an unknown exception during getStatus RTAction execution.
+Sep 16 11:29:37 cfc-sm18-acgplrf3 L4CHOPPER_M: FWK|ERROR|RTScheduler::schedule() catch an unknown exception during getAcquisition RTAction execution.
+Sep 16 11:29:38 cfv-400-alldtl1 ALLL4TunerControl_R[3641]: FWK|ERROR|RTScheduler::schedule() catch an unknown exception during updateAcquisitionBuffer RTAction execution.
+Sep 16 11:29:38 cfv-400-bwsln4 SteppingMotor_R: FWK|ERROR|RTScheduler::schedule() catch an unknown exception during ProcessPlcAcqData RTAction execution.

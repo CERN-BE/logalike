@@ -1,0 +1,223 @@
+acet-tracing-logalike version history log
+==================================
+
+2015/11/12 - release version 2.8.0
+----------------------------------
+[J. Pedersen] Implemented more of Vito's comments, migrated CERN specific 
+			  features to the input project and renamed to logalike
+
+2015/11/06 - release version 2.7.6
+----------------------------------
+[J. Pedersen] Implemented more of Vito's comments
+
+2015/10/30 - release version 2.7.5
+----------------------------------
+[J. Pedersen] Fixed a problem where timestamps could be wrongly formatted when
+			  inserted via the Elasticsearch BulkConsumer
+
+2015/10/30 - release version 2.7.4
+----------------------------------
+[J. Pedersen] Removed logging implementation from list of dependencies
+
+2015/10/30 - release version 2.7.3
+----------------------------------
+[J. Pedersen] Improved logging and error handling in the FileInputBuilder
+
+2015/10/29 - release version 2.7.2
+----------------------------------
+[J. Pedersen] Corrected a problem where a Executor would be finalised
+			  before it could start its executions.
+
+2015/10/29 - release version 2.7.1
+----------------------------------
+[J. Pedersen] Improved logging for the FileInput.
+
+2015/10/29 - release version 2.7.0
+----------------------------------
+[J. Pedersen] Re-implemented the Message as a mutable class. Replaced the
+			  KeyValuePairMapper with a more robust KeyValueMapper.
+
+2015/10/22 - release version 2.6.1
+----------------------------------
+[J. Pedersen] Replaced the sliding message windows with fixed window durations,
+			  that will be cleared periodically.
+
+2015/10/02 - release version 2.6.0
+----------------------------------
+[J. Pedersen] Implemented a FileInput to replace the functionality of Logstash.
+
+2015/09/29 - release version 2.5.5
+----------------------------------
+[J. Pedersen] Parsed all Elasticsearch ZonedDateTime timestamps to strings,
+			  because Elasticsearch cannot read them properly.
+
+2015/09/25 - release version 2.5.4
+----------------------------------
+[J. Pedersen] Corrected type of tracing timestamp field.
+
+2015/09/25 - release version 2.5.3
+----------------------------------
+[J. Pedersen] Added StreamUtils for handling closeable, but infinite, streams.
+
+2015/09/24 - release version 2.5.2
+----------------------------------
+[J. Pedersen] Added fold method in Tuple.
+
+2015/09/14 - release version 2.5.1
+----------------------------------
+[J. Pedersen] Fixed a problem where streams would not concat properly.
+
+2015/09/14 - release version 2.5.0
+----------------------------------
+[J. Pedersen] Added typed messages, where fields can be fixed to a certain type.
+			  Smaller fixes. Upgraded to Elasticsearch 1.6.0.
+
+2015/08/20 - release version 2.4.2
+----------------------------------
+[J. Pedersen] Refactored the client factory to a builder and added input name.
+
+2015/08/19 - release version 2.4.1
+----------------------------------
+[J. Pedersen] Reconfigured the Elasticsearch client factory to use unicast and
+			  multicast.
+
+2015/08/17 - release version 2.4.0
+----------------------------------
+[J. Pedersen] Removed the RecoverableResource in favour of a more simple I/O API
+			  that uses the Elasticsearch node API. Fixed and closed bugs in 
+			  the throttle and duplicate processors.
+
+2015/07/02 - release version 2.3.0
+----------------------------------
+[J. Pedersen] Implemented and tested a more reliable RecoverableResource. Split the
+			  notion of a Filter into Filter, Mapper and Processor. Improved 
+			  Elasticsearch connection handling. Removed unused JMX metrics.
+
+2015/06/30 - release version 2.2.3
+----------------------------------
+[J. Pedersen] Fixed a bug in the persistent connection that could cause
+			an infinite loop.
+
+2015/06/30 - release version 2.2.2
+----------------------------------
+[J. Pedersen] Fixed the Elasticsearch connection to stay alive even when
+			Elasticsearch is not available.
+
+2015/05/29 - release version 2.2.1
+----------------------------------
+[J. Pedersen] Reverted to older version of the regex in the key-value
+			  pair filter.
+
+2015/05/29 - release version 2.2.0
+----------------------------------
+[J. Pedersen] Added updated version of the Throttle filter and implemented
+			  parallelism in Logalike.
+
+2015/05/20 - release version 2.1.7
+----------------------------------
+[J. Pedersen] Removed parallelising again. Just ignore the last 6 
+			  releases. Nothing to see here, move along...
+
+2015/05/17 - release version 2.1.6
+----------------------------------
+[J. Pedersen] Fixed a ConcurrentModificationException in the BulkManager.
+
+2015/05/17 - release version 2.1.5
+----------------------------------
+[J. Pedersen] Fixed a NullPointerException in the DuplicationFilter.
+
+2015/05/17 - release version 2.1.4
+----------------------------------
+[J. Pedersen] Caught an uncaught ArrayIndexOutOfBoundsException in the
+			  ThrottleFilter.
+
+2015/05/16 - release version 2.1.3
+----------------------------------
+[J. Pedersen] Caught an uncaught NumberFormatException which should have
+			  been a ParseException in the key-value filter.
+
+2015/05/15 - release version 2.1.2
+----------------------------------
+[J. Pedersen] Parallelised the messages processing to increase throughput.
+
+2015/05/15 - release version 2.1.1
+----------------------------------
+[J. Pedersen] Refactored filters (apart from the ThrottleFilter) and moved
+			  the configuration to spring. Also adapted new queries for
+			  operational and non-operational hosts.
+
+2015/04/15 - release version 2.1.0
+----------------------------------
+[J. Pedersen] Cleaned up the Elasticsearch output API
+
+2015/03/30 - release version 2.0.8
+----------------------------------
+[J. Pedersen] Made the LogalikeIndex constructor public and moved maintenance
+			  to separate project.
+
+2015/03/20 - release version 2.0.7
+----------------------------------
+[J. Pedersen] Made some fields in the LogalikeIndex protected for subclassing.
+
+2015/03/20 - release version 2.0.6
+----------------------------------
+[J. Pedersen] Added a typed LogalikeIndex to keep better track of the 
+			  used indices. Removed the Logalike Spring context.
+
+2015/03/03 - release version 2.0.5
+----------------------------------
+[J. Pedersen] Changed the LogalikeFilter into a functional interface and
+			  updated the LogalikeMessage API to return 'this' in setters.
+			  So nothing major.
+
+2015/02/16 - release version 2.0.4
+----------------------------------
+[J. Pedersen] Added recoverable inputs and simplified architecture
+
+2015/01/19 - release version 2.0.3
+----------------------------------
+[J. Pedersen] Changed the constructor in ElasticsearchOutput to counter buggy
+			  behaviour in Spring when handling varargs 
+
+2015/01/16 - release version 2.0.2
+----------------------------------
+[J. Pedersen] Re-release 
+			  
+2015/01/16 - release version 2.0.1
+----------------------------------
+[J. Pedersen] Refactored the use of LogalikeMetrics for the inputs to avoid
+			  using the metrics to deploy messages.
+			  Added a new RecoverableLogalikeInput class to make it easier
+			  to convert input data to streams 
+
+2014/12/17 - release version 2.0.0
+----------------------------------
+[J. Pedersen] Refactored the Logalike into a single project 
+
+2014/10/21 - release version 1.1.16
+----------------------------------
+[J. Pedersen] Used new version of acet-tracing-api to support concurrent access
+			  to LogstashMessages
+
+2014/10/08 - release version 1.1.15
+----------------------------------
+[J. Pedersen] Filtered out TST accelerator entries and logs exclusively associated
+              with TST accelerators
+
+2014/09/25 - release version 1.1.14
+----------------------------------
+[J. Pedersen] Included accelerators into the operational filter
+
+2014/09/25 - release version 1.1.13
+----------------------------------
+[J. Pedersen] Removed bulk size parameter in exchange for a fixed time value of 
+			  5 mins.
+
+2014/09/23 - release version 1.1.12
+----------------------------------
+[J. Pedersen] Included a bulk size parameter in the ElasticsearchOutput class
+
+2014/09/23 - release version 1.1.11
+----------------------------------
+[J. Pedersen] Updated internal calls to match new bulk-API in 
+			  acet-tracing-elasticsearch

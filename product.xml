@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<products>
+	<product name="acet-tracing-logalike" version="2.8.0" directory="acet/tracing/acet-tracing-logalike">
+		<desc>Java replacement for Logstash</desc>
+		<dependencies>
+			<dep product="elasticsearch" version="2.0.0" />
+			<dep product="slf4j-api" />
+			<dep product="gson" />
+			<dep product="guava" />
+			<dep product="commons-io" />
+
+			<dep product="mockito" version="1.9.5" local="true" />
+			<dep product="junit" local="true" />
+		</dependencies>
+	</product>
+</products>
