@@ -13,6 +13,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.5'
     compile 'com.google.guava:guava:18.+'
 
-    testCompile 'org.mockito-all:mockito-all:1.+'
+    testCompile 'org.mockito:mockito-all:1.+'
     testCompile 'junit:junit:4.+'
 }
