@@ -48,7 +48,7 @@ public class FileInput<MessageType extends Message<MessageType>> implements Inpu
      */
     public static <MessageType extends Message<MessageType>> TailingBuilder<MessageType> buildTailing(
             Function<String, MessageType> converter) {
-        return new TailingBuilder<MessageType>(converter);
+        return new TailingBuilder<>(converter);
     }
 
     @Override

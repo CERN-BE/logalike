@@ -42,8 +42,8 @@ import cern.acet.tracing.Message;
  */
 public interface FileInputBuilder<MessageType extends Message<MessageType>, BuilderType extends FileInputBuilder<MessageType, BuilderType>> {
 
-    static final Pattern GROK_PARENT_PATTERN = Pattern.compile("^([^?*]*\\" + File.separator + ")(.*)$");
-    static final Logger LOGGER = LoggerFactory.getLogger(FileInputBuilder.class);
+    Pattern GROK_PARENT_PATTERN = Pattern.compile("^([^?*]*\\" + File.separator + ")(.*)$");
+    Logger LOGGER = LoggerFactory.getLogger(FileInputBuilder.class);
 
     /**
      * Adds a file that the {@link FileInput} will read when built.
@@ -52,7 +52,7 @@ public interface FileInputBuilder<MessageType extends Message<MessageType>, Buil
      * @return A {@link FileInputBuilder} with the file set.
      * @throws IllegalArgumentException If the file did not exist or could not be read.
      */
-    public BuilderType addFile(File file) throws IllegalArgumentException;
+    BuilderType addFile(File file) throws IllegalArgumentException;
 
     /**
      * Adds one or more files using a glob pattern, as described in {@link FileSystem#getPathMatcher(String)}. However
@@ -63,7 +63,7 @@ public interface FileInputBuilder<MessageType extends Message<MessageType>, Buil
      * @see FileSystem#getPathMatcher(String).
      * @throws IllegalArgumentException If one or more of the found files did not exist or could not be read.
      */
-    public BuilderType addFiles(String glob) throws IllegalArgumentException;
+    BuilderType addFiles(String glob) throws IllegalArgumentException;
 
     /**
      * Builds the {@link FileInput}.
@@ -71,7 +71,7 @@ public interface FileInputBuilder<MessageType extends Message<MessageType>, Buil
      * @return A {@link FileInput}.
      * @throws IllegalStateException If the builder is built without any files.
      */
-    public FileInput<MessageType> build() throws IllegalStateException;
+    FileInput<MessageType> build() throws IllegalStateException;
 
     /**
      * @return A hook for closing the resources started by the {@link FileInputBuilder}.

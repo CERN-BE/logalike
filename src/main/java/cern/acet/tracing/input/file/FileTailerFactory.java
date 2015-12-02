@@ -24,6 +24,9 @@ import org.slf4j.LoggerFactory;
 
 import cern.acet.tracing.util.StreamUtils;
 
+/**
+ * A factory for creating a single {@link FileInput} which collect lines from one or many {@link File}.
+ */
 public class FileTailerFactory implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileTailerFactory.class);
@@ -31,7 +34,7 @@ public class FileTailerFactory implements AutoCloseable {
 
     private final Duration fileCheckInterval;
     private final AtomicBoolean isOpen = new AtomicBoolean(true);
-    private final LinkedBlockingQueue<String> lineQueue = new LinkedBlockingQueue<String>(QUEUE_CAPACITY);
+    private final LinkedBlockingQueue<String> lineQueue = new LinkedBlockingQueue<>(QUEUE_CAPACITY);
 
     /**
      * Creates a {@link FileTailerFactory} that spawns {@link Tailer}s which check for file changes in the given
