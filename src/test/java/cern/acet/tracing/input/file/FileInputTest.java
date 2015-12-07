@@ -30,7 +30,7 @@ import cern.acet.tracing.MessageImpl;
 
 public class FileInputTest {
 
-    private static final File INPUT_SAMPLE = new File(FileInputTest.class.getResource("/resources/sample-input.txt")
+    private static final File INPUT_SAMPLE = new File(ClassLoader.getSystemClassLoader().getResource("sample-input.txt")
             .getFile());
 
     private FileInput<MessageImpl> fileInput;

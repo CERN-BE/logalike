@@ -1,4 +1,4 @@
-package cern.acet.tracing.input.file;
+package cern.acet.tracing.input.file.tailer;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more

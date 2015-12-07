@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import cern.acet.tracing.input.file.store.FilePositionStore;
+import cern.acet.tracing.input.file.tailer.PositionTailer;
+import cern.acet.tracing.input.file.tailer.PositionTailerListener;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 import org.slf4j.Logger;

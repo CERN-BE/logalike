@@ -1,4 +1,4 @@
-package cern.acet.tracing.input.file;
+package cern.acet.tracing.input.file.tailer;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -17,15 +17,14 @@ package cern.acet.tracing.input.file;
  * limitations under the License.
  */
 
+import cern.acet.tracing.input.file.PositionFileTailerListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.TailerListenerAdapter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.file.Path;
 import java.time.Duration;
 
 /**

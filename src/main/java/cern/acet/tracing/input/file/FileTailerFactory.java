@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import cern.acet.tracing.input.file.store.FilePositionStore;
+import cern.acet.tracing.input.file.tailer.PositionTailer;
 import org.apache.commons.io.input.Tailer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

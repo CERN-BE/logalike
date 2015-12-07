@@ -26,7 +26,7 @@ import org.junit.Test;
 public class FileTailerListenerTest {
 
     private PositionFileTailerListener listener;
-    private LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<String>(10);
+    private LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>(10);
 
     @Before
     public void setup() {
