@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -24,12 +25,12 @@ import org.junit.Test;
 
 public class FileTailerListenerTest {
 
-    private FileTailerListener listener;
+    private PositionFileTailerListener listener;
     private LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<String>(10);
 
     @Before
     public void setup() {
-        listener = new FileTailerListener(queue);
+        listener = new PositionFileTailerListener(queue, Optional.empty());
     }
 
     @Test

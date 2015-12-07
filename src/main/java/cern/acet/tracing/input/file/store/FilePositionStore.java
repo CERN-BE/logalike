@@ -12,7 +12,6 @@
 package cern.acet.tracing.input.file.store;
 
 import cern.acet.tracing.util.ThrowingConsumer;
-import cern.acet.tracing.util.ThrowingFunction;
 import cern.acet.tracing.util.ThrowingSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,20 +25,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * Stores positions in files in a directory
  */
-public class FilePositionStore {
+public class FilePositionStore implements AutoCloseable {
 
     public static final String DEFAULT_DIRECTORY_NAME = ".logalike_store";
     public static final String DEFAULT_DIRECTORY = System.getProperty("user.home") + File.separator + DEFAULT_DIRECTORY_NAME;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FilePositionStore.class);
-
-    private final int ERROR_VALUE = -1;
 
     private final Map<Path, FilePositionStoreEntry> entries = new ConcurrentHashMap<>();
     private final Path directory;
@@ -56,22 +51,40 @@ public class FilePositionStore {
     }
 
     /**
-     * Creates a {@link FilePositionStore} using the given directory. The directory cannot exist and <b>not</b> be
-     * a directory, i. e. a file or a link.
+     * Creates a {@link FilePositionStore} using the given directory as the parent for the store files. The directory
+     * may not exists, but it cannot exist <b>and</b> not be a directory, i. e. a file or a link.
      *
      * @param directory The {@link Path} to the directory where to save files used by this store.
      * @throws IOException If the directory for the store could not be created or if it already exists, but is not
      *                     a directory.
      */
     public FilePositionStore(Path directory) throws IOException {
-        this.directory = Files.createDirectory(directory);
+        if (!Files.exists(directory)) {
+            Files.createDirectory(directory);
+        } else if (!Files.isDirectory(directory)) {
+            throw new IllegalArgumentException("The path to the store must be a directory: " + directory.toString());
+        }
+        this.directory = directory;
+    }
+
+    @Override
+    public synchronized void close() throws Exception {
+        Map<Path, FilePositionStoreEntry> entriesCopy = new HashMap<>(entries);
+        entries.clear();
+        entriesCopy.forEach((path, entry)-> {
+            try {
+                entry.close();
+            } catch (Exception e) {
+                LOGGER.debug("Failed to close file position entry for {}", path, e);
+            }
+        });
     }
 
     public synchronized Optional<Long> getFilePosition(Path file) {
         return getFilePositionEntry(file).flatMap(entry -> tryGet(entry::getFilePosition));
     }
 
-    public synchronized Optional<FilePositionStoreEntry> getFilePositionEntry(Path file) {
+    private synchronized Optional<FilePositionStoreEntry> getFilePositionEntry(Path file) {
         final FilePositionStoreEntry oldEntry = entries.get(file);
         if (oldEntry == null) {
             Optional<FilePositionStoreEntry> newEntryOptional = createEntry(file);
@@ -84,7 +97,7 @@ public class FilePositionStore {
 
     private Optional<FilePositionStoreEntry> createEntry(Path file) {
         try {
-            return Optional.of(new FilePositionStoreEntry(directory, file));
+            return Optional.of(FilePositionStoreEntry.createEntry(directory, file.toAbsolutePath().toString()));
         } catch (IOException e) {
             LOGGER.warn("Failed to create file for " + file, e);
         }
@@ -95,9 +108,9 @@ public class FilePositionStore {
         getFilePositionEntry(file).ifPresent(entry -> trySet(entry::setFilePosition, position));
     }
 
-    private static <T> Optional<T> tryGet(ThrowingSupplier<T, IOException> f) {
+    private static <T> Optional<T> tryGet(ThrowingSupplier<Optional<T>, IOException> f) {
         try {
-            return Optional.of(f.get());
+            return f.get();
         } catch (Exception e) {
             LOGGER.warn("Error when reading store position", e);
             return Optional.empty();
@@ -111,5 +124,4 @@ public class FilePositionStore {
             LOGGER.warn("Error when setting store position", e);
         }
     }
-
 }

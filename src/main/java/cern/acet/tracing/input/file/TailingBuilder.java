@@ -57,7 +57,7 @@ public class TailingBuilder<MessageType extends Message<MessageType>> implements
     private Duration fileCheckInterval = DEFAULT_FILE_CHECK_INTERVAL;
     private boolean isReadingFromBeginning = false;
     private FileTailerFactory tailerFactory;
-    private List<Tailer> tailers;
+    private List<PositionTailer> tailers;
 
     /**
      * Creates a {@link TailingBuilder} that uses the given converter to parse {@link String}s into {@link Message}s.
@@ -101,11 +101,11 @@ public class TailingBuilder<MessageType extends Message<MessageType>> implements
         return new AutoCloseable() {
 
             /* Copy the resource to allow the TailingBuilder to be garbage collected */
-            private final List<Tailer> tailersToClose = tailers;
+            private final List<PositionTailer> tailersToClose = tailers;
 
             @Override
             public void close() throws Exception {
-                tailersToClose.forEach(Tailer::stop);
+                tailersToClose.forEach(PositionTailer::stop);
                 tailerFactory.close();
             }
         };

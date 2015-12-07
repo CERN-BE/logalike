@@ -12,12 +12,15 @@
 package cern.acet.tracing.input.file;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
+import cern.acet.tracing.input.file.store.FilePositionStore;
 import org.apache.commons.io.input.Tailer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +34,18 @@ public class FileTailerFactory implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileTailerFactory.class);
     private static final int QUEUE_CAPACITY = 500;
+    private static final Optional<FilePositionStore> positionStoreOption;
+
+    static {
+        FilePositionStore tempPositionStore;
+        try {
+            tempPositionStore = new FilePositionStore();
+        } catch (IOException e) {
+            LOGGER.warn("Failed to create file position store", e);
+            tempPositionStore = null;
+        }
+        positionStoreOption = Optional.ofNullable(tempPositionStore);
+    }
 
     private final Duration fileCheckInterval;
     private final AtomicBoolean isOpen = new AtomicBoolean(true);
@@ -70,13 +85,25 @@ public class FileTailerFactory implements AutoCloseable {
      *            only read new lines from the end of the file.
      * @return The started tailer.
      */
-    public Tailer startTailer(File file, Executor executor, boolean readFromBeginning) {
-        FileTailerListener listener = new FileTailerListener(lineQueue);
-        Tailer tailer = new Tailer(file, listener, fileCheckInterval.toMillis(), !readFromBeginning);
+    public PositionTailer startTailer(File file, Executor executor, boolean readFromBeginning) {
+        PositionFileTailerListener listener = new PositionFileTailerListener(lineQueue, positionStoreOption);
+        PositionTailer.Builder builder = PositionTailer.builder()
+                .setFile(file)
+                .setListener(listener)
+                .setFileCheckInterval(fileCheckInterval);
+
+        if (readFromBeginning) {
+            builder.setStartPositionAtBeginningOfFile();
+        } else {
+            // Set the starting position if it's available in the position store
+            positionStoreOption.flatMap(store -> store.getFilePosition(file.toPath())).map(builder::setStartPosition);
+        }
+
+        final PositionTailer tailer = builder.build();
         executor.execute(tailer);
 
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Started tailer for file " + file);
+            LOGGER.debug("Started tailing file " + file);
         }
 
         return tailer;
