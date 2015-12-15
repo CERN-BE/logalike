@@ -25,6 +25,20 @@ import cern.acet.tracing.Message;
 /**
  * An {@link Input} that can read and parse lines from one or more {@link File}s.
  *
+ * <h2>Tailing files</h2>
+ * <p>
+ *     The tailing {@link FileInput} implementation stores information about which line in the file was read by any
+ *     previous tailer (if any). If that's the case, the default behaviour is to continue where we stopped. See
+ *     {@link TailingBuilder}.
+ * </p>
+ *
+ * <h3>Caching file-pointers</h3>
+ * <p>
+ *     The tailing implementation also uses a {@link cern.acet.tracing.input.file.store.FilePositionStore} to cache
+ *     information about which line was read last. So if the program crashes or stops reading, it can continue from
+ *     where it left off. If the file we're reading from is rotated, the file position is reset to 0.
+ * </p>
+ *
  * @author jepeders
  */
 public class FileInput<MessageType extends Message<MessageType>> implements Input<MessageType> {

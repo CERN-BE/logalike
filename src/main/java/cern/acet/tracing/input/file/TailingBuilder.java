@@ -44,7 +44,8 @@ import cern.acet.tracing.Message;
  *
  * @author jepeders
  * @param <MessageType> The type of {@link Message} converted from the output of the file(s).
- * @see Tailer
+ * @see PositionTailer
+ * @see cern.acet.tracing.input.file.store.FilePositionStore
  */
 public class TailingBuilder<MessageType extends Message<MessageType>> implements
         FileInputBuilder<MessageType, TailingBuilder<MessageType>> {

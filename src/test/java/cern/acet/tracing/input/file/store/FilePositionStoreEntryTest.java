@@ -18,9 +18,11 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class FilePositionStoreEntryTest {
@@ -33,8 +35,7 @@ public class FilePositionStoreEntryTest {
     public void setup() throws IOException {
         parentPath = Files.createTempDirectory("store");
         filePath = Files.createTempFile("storefile", null);
-        entry = FilePositionStoreEntry.createEntry(parentPath, filePath.toAbsolutePath().toString());
-        System.out.println(filePath);
+        entry = FilePositionStoreEntry.createEntry(parentPath, filePath.toAbsolutePath());
     }
 
     @After
@@ -74,8 +75,17 @@ public class FilePositionStoreEntryTest {
         Long position = 3123L;
         entry.setFilePosition(position);
         entry.close();
-        entry = FilePositionStoreEntry.createEntry(parentPath, filePath.toAbsolutePath().toString());
+        entry = FilePositionStoreEntry.createEntry(parentPath, filePath.toAbsolutePath());
         assertEquals(Optional.of(position), entry.getFilePosition());
+    }
+
+    @Test
+    public void canTestThatFileWasMoved() throws IOException, InterruptedException {
+        Path newFile = Paths.get(filePath.toString() + "moved");
+        Files.move(filePath, newFile);
+        Thread.sleep(1000); // Some file timestamps is granular to seconds, so we'll have to wait to distinguish
+        Files.createFile(filePath);
+        assertFalse(entry.isSameFile(filePath));
     }
 
     private Path getStoreFile() {

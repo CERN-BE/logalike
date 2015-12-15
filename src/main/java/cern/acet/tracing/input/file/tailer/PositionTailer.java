@@ -17,7 +17,6 @@ package cern.acet.tracing.input.file.tailer;
  * limitations under the License.
  */
 
-import cern.acet.tracing.input.file.PositionFileTailerListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -376,7 +375,7 @@ public class PositionTailer implements Runnable {
          *                 This field is required.
          * @return The same builder with the listener set.
          */
-        public Builder setListener(PositionFileTailerListener listener) {
+        public Builder setListener(PositionTailerListener listener) {
             this.listener = listener;
             return this;
         }

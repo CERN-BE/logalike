@@ -18,10 +18,10 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class FilePositionStoreTest {
 
@@ -33,7 +33,7 @@ public class FilePositionStoreTest {
     public void setup() throws IOException {
         parentPath = Files.createTempDirectory("store");
         filePath = Files.createTempFile("storefile", null);
-        store = new FilePositionStore(parentPath);
+        store = FilePositionStore.createUnder(parentPath);
     }
 
     @After
@@ -46,11 +46,11 @@ public class FilePositionStoreTest {
                     /* Do nothing */
                 }
             });
+            Files.delete(parentPath);
+            Files.delete(filePath);
         } catch (IOException e) {
             /* Do nothing */
         }
-        Files.delete(parentPath);
-        Files.delete(filePath);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class FilePositionStoreTest {
         Long data = 1312L;
         store.setFilePosition(filePath, data);
         store.close();
-        store = new FilePositionStore(parentPath);
+        store = FilePositionStore.createUnder(parentPath);
         assertEquals(Optional.of(data), store.getFilePosition(filePath));
     }
 
@@ -83,7 +83,24 @@ public class FilePositionStoreTest {
     public void canFailIfDirectoryIsFile() throws IOException {
         Files.delete(parentPath);
         Files.createFile(parentPath);
-        store = new FilePositionStore(parentPath);
+        store = FilePositionStore.createUnder(parentPath);
+    }
+
+    @Test
+    public void canReturnEmptyPositionIfFileIsMoved() throws IOException {
+        store.setFilePosition(filePath, 0L);
+        Path newFile = Paths.get(filePath.toString() + "moved");
+        Files.move(filePath, newFile);
+        assertEquals(Optional.empty(), store.getFilePosition(filePath));
+    }
+
+    @Test
+    public void canResetPositionIfFileIsMoved() throws IOException {
+        store.setFilePosition(filePath, 0L);
+        Path newFile = Paths.get(filePath.toString() + "moved");
+        Files.move(filePath, newFile);
+        Files.createFile(filePath);
+        assertEquals(Optional.of(0L), store.getFilePosition(filePath));
     }
 
 }

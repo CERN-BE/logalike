@@ -5,7 +5,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.charset.Charset;
 import java.nio.file.*;
-import java.util.Collections;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
 import java.util.Optional;
 
 import static com.google.common.hash.Hashing.*;
@@ -20,16 +21,20 @@ class FilePositionStoreEntry implements AutoCloseable {
 
     private static final int BEGINNING_OF_FILE = 0;
 
+    private final Instant timeOfCreation;
     private final FileChannel channel;
     private final FileLock lock;
 
     /**
      * Creates a new {@link FilePositionStoreEntry} which uses the given channel to write file positions to.
-     * @param channel
-     * @throws IOException
+     * @param channel The channel to read from.
+     * @param timeOfCreation The {@link Instant} when the file we are tracking was created. Used to check for log
+     *                       rotations.
+     * @throws IOException If the file could not be read or we failed to lock the store file (already in use?).
      */
-    FilePositionStoreEntry(FileChannel channel) throws IOException{
+    FilePositionStoreEntry(FileChannel channel, Instant timeOfCreation) throws IOException{
         this.channel = channel;
+        this.timeOfCreation = timeOfCreation;
 
         try {
             lock = channel.tryLock();
@@ -48,17 +53,35 @@ class FilePositionStoreEntry implements AutoCloseable {
      * Creates a {@link FilePositionStoreEntry} under the given directory, which uses the given file-name to uniquely
      * identify any previously stored file positions for that file.
      * @param parentDirectory The parent directory for the file position store.
-     * @param fileName The name of the file to track. Should be the absolute name of the file avoid name-clashes.
+     * @param file The file to track. Should be the absolute name of the file avoid name-clashes.
      * @return A {@link FilePositionStoreEntry}.
      * @throws IOException If the file could not be opened.
      */
-    public static FilePositionStoreEntry createEntry(Path parentDirectory, String fileName) throws IOException {
-        final String encoded = hashFileName(fileName);
+    public static FilePositionStoreEntry createEntry(Path parentDirectory, Path file) throws IOException {
+        final String encoded = hashFileName(file.toString());
         final Path storeFile = Paths.get(parentDirectory.toString(), encoded);
         if (!Files.exists(storeFile)) {
             Files.createFile(storeFile);
         }
-        return new FilePositionStoreEntry(FileChannel.open(storeFile, SYNC, READ, WRITE));
+        return new FilePositionStoreEntry(FileChannel.open(storeFile, SYNC, READ, WRITE), getTimeOfCreation(file));
+    }
+
+    /**
+     * Verifies that the given file is the same that we are currently tracking by comparing the time of creation for the
+     * file we are currently tracking and the given file.
+     *
+     * @param file The other file to compare with the currently tracked file.
+     * @return True if the file from this entry is the same as the given file.
+     * @throws IOException If we could not read the file attributes of the given file.
+     */
+    public boolean isSameFile(Path file) throws IOException {
+        Instant newFileTime = getTimeOfCreation(file);
+        return timeOfCreation.compareTo(newFileTime) == 0;
+    }
+
+    private static Instant getTimeOfCreation(Path file) throws IOException {
+        BasicFileAttributes attributes = Files.readAttributes(file, BasicFileAttributes.class);
+        return attributes.creationTime().toInstant();
     }
 
     public Optional<Long> getFilePosition() throws IOException {

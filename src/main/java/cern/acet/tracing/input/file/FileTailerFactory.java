@@ -40,7 +40,7 @@ public class FileTailerFactory implements AutoCloseable {
     static {
         FilePositionStore tempPositionStore;
         try {
-            tempPositionStore = new FilePositionStore();
+            tempPositionStore = FilePositionStore.createUnderDefaultDirectory();
         } catch (IOException e) {
             LOGGER.warn("Failed to create file position store", e);
             tempPositionStore = null;
