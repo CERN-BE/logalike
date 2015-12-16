@@ -92,6 +92,7 @@ public class FilePositionStoreTest {
         Path newFile = Paths.get(filePath.toString() + "moved");
         Files.move(filePath, newFile);
         assertEquals(Optional.empty(), store.getFilePosition(filePath));
+        Files.delete(newFile);
     }
 
     @Test
@@ -101,6 +102,7 @@ public class FilePositionStoreTest {
         Files.move(filePath, newFile);
         Files.createFile(filePath);
         assertEquals(Optional.of(0L), store.getFilePosition(filePath));
+        Files.delete(newFile);
     }
 
 }
