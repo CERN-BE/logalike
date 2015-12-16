@@ -19,21 +19,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
+import cern.acet.tracing.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import cern.acet.tracing.Input;
-import cern.acet.tracing.Logalike;
-import cern.acet.tracing.LogalikeImpl;
-import cern.acet.tracing.MessageImpl;
-import cern.acet.tracing.Output;
 import cern.acet.tracing.processing.Processor;
 import cern.acet.tracing.util.type.strategy.DropStrategy;
 
-public class LogalikeTest {
+public class LogalikeImplTest {
 
     private LogalikeImpl<MessageImpl> logalike;
     private MessageImpl message;
@@ -79,6 +76,22 @@ public class LogalikeTest {
     }
 
     @Test
+    public void canCloseCloseableInput() throws IOException {
+        CloseableInput<MessageImpl> closeableInput = mock(CloseableInput.class);
+        createLogalike(closeableInput, mockOutput);
+        logalike.close();
+        verify(closeableInput).close();
+    }
+
+    @Test
+    public void canCloseCloseableOutput() throws IOException {
+        CloseableOutput<MessageImpl> closeableOutput = mock(CloseableOutput.class);
+        createLogalike(mockInput, closeableOutput);
+        logalike.close();
+        verify(closeableOutput).close();
+    }
+
+    @Test
     public void canFilterMessages() {
         AtomicBoolean shouldAllow = new AtomicBoolean(true);
         processor = s -> s.filter(m -> shouldAllow.getAndSet(false));
@@ -94,7 +107,11 @@ public class LogalikeTest {
 
     private void setInput(Stream<MessageImpl> stream) {
         when(mockInput.get()).thenReturn(stream);
-        logalike = Logalike.<MessageImpl> builder().setInput(mockInput).setOutput(mockOutput)
+        createLogalike(mockInput, mockOutput);
+    }
+
+    private void createLogalike(Input<MessageImpl> input, Output<MessageImpl> output) {
+        logalike = Logalike.<MessageImpl> builder().setInput(input).setOutput(output)
                 .addProcessor(processor).build();
     }
 
