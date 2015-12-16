@@ -11,16 +11,19 @@
 
 package cern.acet.tracing;
 
+import java.io.Closeable;
 import java.util.function.Consumer;
 
 /**
- * An output for Logstash capable of consuming messages into a sink, specified in the actual implementation.
+ * An output for Logstash capable of consuming messages into a sink, specified in the actual implementation. Unlike
+ * the regular {@link Output}, outputs built with this interface will be closed when the running Logalike implementation
+ * shuts down.
  * 
  * @param <MessageType> The type of {@link Message} which can be subtyped to extend the functionality.
  * @author ghoranyi, jepeders
  */
-@FunctionalInterface
-public interface Output<MessageType extends Message<MessageType>> extends Consumer<MessageType> {
+public interface CloseableOutput<MessageType extends Message<MessageType>> extends Consumer<MessageType>,
+        Output<MessageType>, Closeable {
 
     /**
      * Accepts a message and sends it to the relevant output sink.

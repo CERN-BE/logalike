@@ -11,7 +11,6 @@
 
 package cern.acet.tracing;
 
-import java.io.Closeable;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -22,7 +21,8 @@ import java.util.stream.Stream;
  * @param <MessageType> The type of {@link Message} which can be subtyped to extend the functionality.
  * @author ghoranyi, jepeders
  */
-public interface Input<MessageType extends Message<MessageType>> extends Supplier<Stream<MessageType>>, Closeable {
+@FunctionalInterface
+public interface Input<MessageType extends Message<MessageType>> extends Supplier<Stream<MessageType>> {
 
     /**
      * Returns a stream of {@link Message}s generated from this input.

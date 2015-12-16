@@ -93,7 +93,7 @@ public class PositionTailerTest {
         start();
         String data = write("testString", file);
         Files.move(file, newFile);
-        Thread.sleep(10);
+        Thread.sleep(50);
         String newData = write("testString2", file);
         verify(mockListener).handle(data);
         verify(mockListener).handle(newData);

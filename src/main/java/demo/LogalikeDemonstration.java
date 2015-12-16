@@ -11,35 +11,29 @@
 
 package demo;
 
-import java.io.File;
-import java.util.function.Function;
-
+import cern.acet.tracing.Input;
 import cern.acet.tracing.Logalike;
-import cern.acet.tracing.input.file.FileInput;
-import cern.acet.tracing.output.ElasticsearchOutput;
-import cern.acet.tracing.output.elasticsearch.ElasticsearchMessage;
+import cern.acet.tracing.MessageImpl;
+import cern.acet.tracing.Output;
+
+import java.util.stream.Stream;
 
 /**
- * A demonstration on how to use Logsmart to read a file and send the contents to Elasticsearch.
+ * A demonstration on how to use Logsmart to read create an endless stream of messages and print them to std::out.
  * 
  * @author jepeders
  */
 public class LogalikeDemonstration {
 
     public static void main(String[] args) {
-        // Create the output
-        ElasticsearchOutput output = ElasticsearchOutput.builder().addHost("elasticsearchHost").build();
+        // Create a output that prints to system out
+        Output<MessageImpl> output = System.out::println;
 
-        // Write a converter that reads lines and converts them into messages
-        Function<String, ElasticsearchMessage> converter = line -> output.createTypedMessage().put("body", line);
-
-        // Create the input
-        FileInput<ElasticsearchMessage> input = FileInput.<ElasticsearchMessage> buildTailing(converter)
-                .addFile(new File("fileToReadFrom")).build();
+        // Create the input which simply spits out empty messages
+        Input<MessageImpl> input = () -> Stream.generate(MessageImpl::ofUntyped);
 
         // Create a Logsmart instance that uses the input and output
-        Logalike<ElasticsearchMessage> logsmart = Logalike.<ElasticsearchMessage> builder().setInput(input)
-                .setOutput(output).build();
+        Logalike<MessageImpl> logsmart = Logalike.<MessageImpl> builder().setInput(input).setOutput(output).build();
 
         // Run it (preferably in a thread)
         logsmart.run();

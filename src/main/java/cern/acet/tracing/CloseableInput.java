@@ -11,23 +11,27 @@
 
 package cern.acet.tracing;
 
-import java.util.function.Consumer;
+import java.io.Closeable;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
- * An output for Logstash capable of consuming messages into a sink, specified in the actual implementation.
+ * A Logstash input capable of serving {@link Message}s from a stream. Depending on the implementation this stream can
+ * be parallel or sequential. Unlike the regular {@link Input}, inputs built
+ * with this interface will be closed when Logalike closes.
  * 
  * @param <MessageType> The type of {@link Message} which can be subtyped to extend the functionality.
  * @author ghoranyi, jepeders
  */
-@FunctionalInterface
-public interface Output<MessageType extends Message<MessageType>> extends Consumer<MessageType> {
+public interface CloseableInput<MessageType extends Message<MessageType>> extends Supplier<Stream<MessageType>>,
+        Input<MessageType>, Closeable {
 
     /**
-     * Accepts a message and sends it to the relevant output sink.
+     * Returns a stream of {@link Message}s generated from this input.
      * 
-     * @param message The message to consume.
+     * @return a {@link Stream} of {@link Message}s.
      */
     @Override
-    void accept(MessageType message);
+    Stream<MessageType> get();
 
 }

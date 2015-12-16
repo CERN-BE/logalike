@@ -30,7 +30,7 @@ public class FilterTest {
 
     @Before
     public void setup() {
-        message = new MessageImpl();
+        message = MessageImpl.ofUntyped();
     }
 
     @Test

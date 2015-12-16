@@ -16,3 +16,7 @@ dependencies {
     testCompile 'org.mockito:mockito-all:1.+'
     testCompile 'junit:junit:4.+'
 }
+
+test {
+    maxParallelForks = 2
+}

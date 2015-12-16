@@ -13,7 +13,6 @@ package cern.acet.tracing.output;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,22 +29,12 @@ public class LogalikeOutputTest {
 
     @Before
     public void setup() {
-        output = new Output<MessageImpl>() {
-
-            @Override
-            public void close() throws IOException {
-                /* Do nothing */
-            }
-
-            @Override
-            public void accept(MessageImpl message) {
-                messagesReceived++; 
-            }};
+        output = message -> messagesReceived++;
     }
 
     @Test
     public void canForwardStreamAcceptCalls() {
-        List<MessageImpl> messages = Arrays.asList(new MessageImpl(), new MessageImpl());
+        List<MessageImpl> messages = Arrays.asList(MessageImpl.ofUntyped(), MessageImpl.ofUntyped());
         messages.stream().forEach(output::accept);
         assertEquals(messages.size(), messagesReceived);
     }

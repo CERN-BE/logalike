@@ -11,6 +11,7 @@
 
 package cern.acet.tracing.logalike;
 
+import static cern.acet.tracing.MessageImpl.ofUntyped;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
@@ -46,7 +47,7 @@ public class LogalikeTest {
         processor = stream -> stream;
         mockInput = mock(Input.class);
         mockOutput = mock(Output.class);
-        message = new MessageImpl();
+        message = ofUntyped();
     }
 
     @Test
@@ -63,7 +64,7 @@ public class LogalikeTest {
 
     @Test
     public void canProcessConcatenatedStream() throws Exception {
-        MessageImpl message2 = new MessageImpl(DropStrategy.INSTANCE);
+        MessageImpl message2 = MessageImpl.of(DropStrategy.INSTANCE);
         Stream<MessageImpl> concatenated = Stream.concat(streamGenerator(message), streamGenerator(message2));
         runInfinite(concatenated);
         verify(mockOutput, atLeastOnce()).accept(message);
@@ -87,7 +88,7 @@ public class LogalikeTest {
 
     @Test
     public void canRunFiniteStream() {
-        setInput(Stream.of(new MessageImpl()));
+        setInput(Stream.of(ofUntyped()));
         logalike.run();
     }
 

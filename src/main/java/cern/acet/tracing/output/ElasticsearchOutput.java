@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import cern.acet.tracing.CloseableOutput;
 import org.elasticsearch.client.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ import com.google.common.collect.ImmutableMap;
  *
  * @author ghoranyi, jepeders
  */
-public class ElasticsearchOutput implements Output<ElasticsearchMessage>, Closeable {
+public class ElasticsearchOutput implements CloseableOutput<ElasticsearchMessage> {
 
     private static final String CONSTRUCTOR_FORMAT_STRING = "Created ElasticsearchOutput with type strategy {} "
             + "and type mapping {}";
@@ -154,7 +155,7 @@ public class ElasticsearchOutput implements Output<ElasticsearchMessage>, Closea
         /**
          * Adds the given host to the Elasticsearch cluster to connect to.
          *
-         * @param hosts A host to connect to when the {@link ElasticsearchOutput} is started.
+         * @param host A host to connect to when the {@link ElasticsearchOutput} is started.
          * @return The same builder with the host set.
          */
         public Builder addHost(String host) {
@@ -192,7 +193,7 @@ public class ElasticsearchOutput implements Output<ElasticsearchMessage>, Closea
 
         /**
          * Sets the name of the Elasticsearch cluster to connect to. Used to locate clusters using TCP multicast. This
-         * is a required parameter, but can be supplemented by {@link #setHosts(List)} to locate individual hosts
+         * is a required parameter, but can be supplemented by {@link #addHost(String)} to locate individual hosts
          * outside the multicast network.
          *
          * @param clusterName The name of the cluster.

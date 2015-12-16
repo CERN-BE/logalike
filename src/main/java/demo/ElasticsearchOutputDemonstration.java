@@ -33,7 +33,6 @@ public class ElasticsearchOutputDemonstration {
     public static void main(String[] args) {
         Builder builder = ElasticsearchOutput.builder();
 
-        // //////////////////////////////
         // Stage 1 //////////////////////
 
         // Mandatory: The name of the host, on which an Elasticsearch instance is
@@ -58,7 +57,6 @@ public class ElasticsearchOutputDemonstration {
         // Builds the output
         ElasticsearchOutput output = builder.build();
 
-        // //////////////////////////////
         // Stage 2 //////////////////////
 
         // Create a message with the type-restrictions defined above
@@ -70,10 +68,9 @@ public class ElasticsearchOutputDemonstration {
         // Send it!
         output.accept(message);
 
-        // //////////////////////////////
         // Stage 3 //////////////////////
 
-        // Flush the output, so any remaining
+        // Flush the output, so any remaining messages are sent
         output.flush();
 
         // Close the output (recommended to use try-with-resource clauses)

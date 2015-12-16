@@ -46,9 +46,7 @@ public class LogalikeImpl<MessageType extends Message<MessageType>> implements L
     /**
      * Creates a new Logalike instance.
      *
-     * @param input The {@link Input} that generates {@link Message}s.
-     * @param output The {@link Output} that can consume {@link Message}s.
-     * @param processor The {@link Processor} that can process {@link Message}s.
+     * @param builder The builder instance with information to construct a LogalikeImpl instance.
      * @throws NullPointerException if any of the parameters are null
      */
     private LogalikeImpl(Builder<MessageType> builder) throws NullPointerException {
@@ -64,14 +62,14 @@ public class LogalikeImpl<MessageType extends Message<MessageType>> implements L
      * @return An implementation of a {@link cern.acet.tracing.Logalike.Builder}.
      */
     public static <MessageType extends Message<MessageType>> Builder<MessageType> builder() {
-        return new Builder<MessageType>();
+        return new Builder<>();
     }
 
     /**
-     * Retrieves the {@link Processor} (reduced to one single {@link UnaryOperator}, which in turn is a subclass of
-     * {@link Function} with the same in- and output parameters) used by this {@link Logalike} instance.
+     * Retrieves the {@link Processor} (reduced to one single {@link UnaryOperator}) which processes the message
+     * stream in this {@link Logalike} instance.
      *
-     * @return A {@link Function} that processes all the incoming {@link Message}s.
+     * @return A {@link Processor} that processes all the incoming {@link Message}s.
      */
     public Processor<MessageType> getProcessorChain() {
         return processorChain::apply;
@@ -109,8 +107,12 @@ public class LogalikeImpl<MessageType extends Message<MessageType>> implements L
         if (outputStream != null) {
             outputStream.close();
         }
-        input.close();
-        output.close();
+        if (input instanceof CloseableInput) {
+            ((CloseableInput) input).close();
+        }
+        if (output instanceof CloseableOutput) {
+            ((CloseableOutput) output).close();
+        }
     }
 
     /**
@@ -133,7 +135,7 @@ public class LogalikeImpl<MessageType extends Message<MessageType>> implements L
             if (output == null) {
                 throw new IllegalArgumentException("Output must be defined");
             }
-            return new LogalikeImpl<MessageType>(this);
+            return new LogalikeImpl<>(this);
         }
 
         @Override

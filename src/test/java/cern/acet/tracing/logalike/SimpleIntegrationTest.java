@@ -47,37 +47,15 @@ public class SimpleIntegrationTest {
 
     @Before
     public void setup() {
-        input = new Input<MessageImpl>() {
-
-            @Override
-            public void close() throws IOException {
-                /* Do nothing */
-            }
-
-            @Override
-            public Stream<MessageImpl> get() {
-                return Stream.generate(() -> new MessageImpl().put(HOST_FIELD, HOST_VALUE));
-            }
-        };
+        input = () -> Stream.generate(() -> MessageImpl.ofUntyped().put(HOST_FIELD, HOST_VALUE));
 
         received = new AtomicInteger();
-        output = new Output<MessageImpl>() {
-
-            @Override
-            public void close() throws IOException {
-                /* Do nothing */
-            }
-
-            @Override
-            public void accept(MessageImpl message) {
-                received.incrementAndGet();
-            }
-        };
+        output = message -> received.incrementAndGet();
 
         kvMapper = KeyValueMapper.<MessageImpl> builder().setFieldToParse(BODY_FIELD).build();
         duplicateProcessor = RepetitionProcessor.<MessageImpl> builder().setFingerprintStrategyByField(BODY_FIELD)
                 .setWindowDuration(Duration.ofMillis(1)).build();
-        throttleProcessor = new ThrottleProcessor<MessageImpl>(Duration.ofMillis(1), 10,
+        throttleProcessor = new ThrottleProcessor<>(Duration.ofMillis(1), 10,
                 message -> message.getAsString(HOST_FIELD));
     }
 

@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import cern.acet.tracing.CloseableInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ import cern.acet.tracing.Message;
  *
  * @author jepeders
  */
-public class FileInput<MessageType extends Message<MessageType>> implements Input<MessageType> {
+public class FileInput<MessageType extends Message<MessageType>> implements CloseableInput<MessageType> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileInput.class);
     private final Stream<MessageType> messageStream;

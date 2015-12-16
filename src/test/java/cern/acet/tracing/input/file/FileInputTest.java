@@ -11,6 +11,8 @@
 
 package cern.acet.tracing.input.file;
 
+import static cern.acet.tracing.MessageImpl.ofUntyped;
+import static java.lang.ClassLoader.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -30,7 +32,7 @@ import cern.acet.tracing.MessageImpl;
 
 public class FileInputTest {
 
-    private static final File INPUT_SAMPLE = new File(ClassLoader.getSystemClassLoader().getResource("sample-input.txt")
+    private static final File INPUT_SAMPLE = new File(getSystemClassLoader().getResource("sample-input.txt")
             .getFile());
 
     private FileInput<MessageImpl> fileInput;
@@ -76,23 +78,17 @@ public class FileInputTest {
     }
 
     private FileInput<MessageImpl> createInput(File file) {
-        return FileInput.buildTailing(line -> {
-            return new MessageImpl().put("body", line);
-        }).addFile(file).build();
+        return FileInput.buildTailing(line -> ofUntyped().put("body", line)).addFile(file).build();
     }
 
     private FileInput<MessageImpl> createInput(List<File> files) {
-        final TailingBuilder<MessageImpl> builder = FileInput.buildTailing(line -> {
-            return new MessageImpl().put("body", line);
-        });
+        final TailingBuilder<MessageImpl> builder = FileInput.buildTailing(line -> ofUntyped().put("body", line));
         files.forEach(builder::addFile);
         return builder.build();
     }
 
     private FileInput<MessageImpl> createInput(String glob) {
-        return FileInput.buildTailing(line -> {
-            return new MessageImpl().put("body", line);
-        }).addFiles(glob).build();
+        return FileInput.buildTailing(line -> ofUntyped().put("body", line)).addFiles(glob).build();
     }
 
     private void populateWithDelay(File inputFile, File outputFile, int delay) {

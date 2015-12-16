@@ -31,7 +31,7 @@ public class FilterPredicateTest {
 
     @Before
     public void setup() {
-        message = new MessageImpl().put(BODY_FIELD, BODY_VALUE + " other data");
+        message = MessageImpl.ofUntyped().put(BODY_FIELD, BODY_VALUE + " other data");
     }
 
     @Test

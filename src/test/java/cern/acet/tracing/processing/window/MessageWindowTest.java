@@ -33,7 +33,7 @@ public class MessageWindowTest {
 
     @Before
     public void setup() {
-        message = new MessageImpl().putTimestamp(ZonedDateTime.now(CLOCK));
+        message = MessageImpl.ofUntyped().putTimestamp(ZonedDateTime.now(CLOCK));
         window = new MessageWindow<>(message, CLOCK);
     }
 
@@ -63,7 +63,7 @@ public class MessageWindowTest {
 
     @Test
     public void canSetTimeFromClock() throws Exception {
-        message = new MessageImpl().remove(MessageImpl.TIMESTAMP_FIELD);
+        message = MessageImpl.ofUntyped().remove(MessageImpl.TIMESTAMP_FIELD);
         window = new MessageWindow<>(message, CLOCK);
         assertFalse(window.isOlderThan(Instant.now(CLOCK)));
     }

@@ -55,8 +55,8 @@ public class ThrottleProcessorTest {
     @SuppressWarnings("unchecked")
     @Before
     public void setup() {
-        message = new MessageImpl();
-        throttleMessage = new MessageImpl();
+        message = MessageImpl.ofUntyped();
+        throttleMessage = MessageImpl.ofUntyped();
         mockClockSupplier = mock(Supplier.class);
         mockListener = mock(ThrottleListener.class);
         when(mockListener.onThrottleEnding(Matchers.any(), Matchers.any(), Matchers.anyLong())).thenReturn(
@@ -66,8 +66,7 @@ public class ThrottleProcessorTest {
         when(mockListener.onThrottleStarting(Matchers.any(), Matchers.any(), Matchers.anyLong())).thenReturn(
                 Optional.of(throttleMessage));
         when(mockClockSupplier.get()).thenReturn(CLOCK_NOW);
-        filter = new ThrottleProcessor<MessageImpl>(DURATION, MESSAGE_LIMIT, x -> x.getAsString(HOST_FIELD),
-                mockListener);
+        filter = new ThrottleProcessor<>(DURATION, MESSAGE_LIMIT, x -> x.getAsString(HOST_FIELD), mockListener);
         message.put(HOST_FIELD, TEST_HOST);
     }
 

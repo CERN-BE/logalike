@@ -47,12 +47,16 @@ public class FileTailerListenerTest {
         List<String> expected = Arrays.asList(lines);
         AtomicReference<List<String>> actual = new AtomicReference<>();
         Thread t = new Thread(() -> {
+            try {
+                Thread.sleep(50); // Wait for the tailer to read the lines
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             actual.set(queue.stream().limit(expected.size()).collect(Collectors.toList()));
         });
         t.start();
         expected.stream().forEach(listener::handle);
         t.join();
-        Thread.sleep(100);
         assertEquals(expected, actual.get());
     }
 }

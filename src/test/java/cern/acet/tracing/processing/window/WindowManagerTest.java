@@ -35,7 +35,7 @@ public class WindowManagerTest {
     private static final FingerprintStrategy<MessageImpl> STRATEGY = message -> message.getOptionalAs(
             FINGERPRINT_FIELD, String.class).orElse("");
     private static final Duration DECAY = Duration.ofMillis(DECAY_IN_MILLIS);
-    private static final MessageImpl MESSAGE = new MessageImpl(AcceptStrategy.INSTANCE).put(FINGERPRINT_FIELD,
+    private static final MessageImpl MESSAGE = MessageImpl.of(AcceptStrategy.INSTANCE).put(FINGERPRINT_FIELD,
             FINGERPRINT_VALUE);
 
     private static final Clock CLOCK_MINUS_DECAY = Clock.fixed(Instant.ofEpochMilli(100).minus(DECAY).minusMillis(1),

@@ -57,7 +57,7 @@ public class RepetitionProcessorTest {
         filter = RepetitionProcessor.<MessageImpl> builder().setFingerprintStrategyByField(FINGERPRINT_FIELD)
                 .setWindowDuration(WINDOW_DURATION).setRepeatingMapper(ACTION_REPEATING)
                 .setNonRepeatingMapper(ACTION_NON_REPEATING).build();
-        message = new MessageImpl().putTimestamp(ZonedDateTime.now(CLOCK_NOW))
+        message = MessageImpl.ofUntyped().putTimestamp(ZonedDateTime.now(CLOCK_NOW))
                 .put(FINGERPRINT_FIELD, FINGERPRINT_VALUE);
     }
 
@@ -74,7 +74,7 @@ public class RepetitionProcessorTest {
 
     @Test
     public void canFilterMessageWithoutBodyField() {
-        message = new MessageImpl();
+        message = MessageImpl.ofUntyped();
         assertTrue(filterSingle(message).isPresent());
     }
 
