@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +55,7 @@ public class FileInputTest {
     @After
     public void teardown() throws Exception {
         fileInput.close();
-        dataFile.delete();
+        Files.delete(dataFile.toPath());
     }
 
     @Test
@@ -75,13 +76,13 @@ public class FileInputTest {
         populateWithDelay(INPUT_SAMPLE, dataFile, 100);
         populateWithDelay(INPUT_SAMPLE, dataFile2, 100);
         assertEquals(20, fileInput.get().limit(20).count());
-        dataFile2.delete();
+        Files.delete(dataFile2.toPath());
     }
 
     @Test
     public void canReadGlobbedFiles() {
         fileInput = createInput(dataFile.toString() + "*");
-        populateWithDelay(INPUT_SAMPLE, dataFile, 10);
+        populateWithDelay(INPUT_SAMPLE, dataFile, 0);
         assertTrue(fileInput.get().findAny().get().containsKey("body"));
     }
 
@@ -89,7 +90,7 @@ public class FileInputTest {
     public void canSetStorePositionToFileSize() throws IOException, InterruptedException {
         fileInput = createInput(dataFile.toString());
         populateWithDelay(INPUT_SAMPLE, dataFile, 10);
-        Thread.sleep(500); // Wait for the input to read everything
+        fileInput.get().limit(10).count(); // Force read everything
         fileInput.close();
 
         Optional<Long> filePosition = FilePositionStore.createUnderDefaultDirectory()

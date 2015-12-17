@@ -21,9 +21,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
 import static org.mockito.Mockito.*;
 
 public class PositionTailerTest {
@@ -42,7 +45,7 @@ public class PositionTailerTest {
                 .when(mockListener)
                 .init(Matchers.any(PositionTailer.class));
         file = Files.createTempFile("tailer", null);
-        tailerBuilder = PositionTailer.builder().setFile(file.toFile()).setFileCheckInterval(Duration.ofMillis(10))
+        tailerBuilder = PositionTailer.builder().setFile(file.toFile()).setFileCheckInterval(Duration.ofMillis(5))
                 .setListener(mockListener);
     }
 
@@ -102,8 +105,10 @@ public class PositionTailerTest {
         start();
         String data = write("testString", file);
         Files.move(file, newFile);
-        Thread.sleep(200);
-        String newData = write("testString2", file);
+        Files.createFile(file);
+        String newData = write("testNew", file);
+        Thread.sleep(100);
+        tailer.stop();
         verify(mockListener).handle(data);
         verify(mockListener).handle(newData);
         Files.delete(newFile);
@@ -121,7 +126,7 @@ public class PositionTailerTest {
     }
 
     private String write(String data, Path file) throws IOException {
-        Files.write(file, (data + '\n').getBytes());
+        Files.write(file, (data + '\n').getBytes(), APPEND);
         return data;
     }
 

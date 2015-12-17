@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -50,6 +51,7 @@ public class FileTailerFactoryTest {
     public void teardown() throws Exception {
         executor.shutdown();
         factory.close();
+        Files.delete(file.toPath());
     }
 
     @Test
@@ -66,6 +68,7 @@ public class FileTailerFactoryTest {
         factory.startTailer(file, mockExecutor, true);
         factory.startTailer(file2, mockExecutor, true);
         verify(mockExecutor, times(2)).execute(Matchers.any(Tailer.class));
+        Files.delete(file2.toPath());
     }
 
     @Test
