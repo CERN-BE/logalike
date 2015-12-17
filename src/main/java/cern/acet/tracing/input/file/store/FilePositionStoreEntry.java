@@ -28,19 +28,15 @@ class FilePositionStoreEntry implements AutoCloseable {
     /**
      * Creates a new {@link FilePositionStoreEntry} which uses the given channel to write file positions to.
      * @param channel The channel to read from.
+     * @param lock The file lock which will be held for the duration of the class.
      * @param timeOfCreation The {@link Instant} when the file we are tracking was created. Used to check for log
      *                       rotations.
      * @throws IOException If the file could not be read or we failed to lock the store file (already in use?).
      */
-    FilePositionStoreEntry(FileChannel channel, Instant timeOfCreation) throws IOException{
+    FilePositionStoreEntry(FileChannel channel, FileLock lock, Instant timeOfCreation) throws IOException{
         this.channel = channel;
         this.timeOfCreation = timeOfCreation;
-
-        try {
-            lock = channel.tryLock();
-        } catch (OverlappingFileLockException e) {
-            throw new IOException(e);
-        }
+        this.lock = lock;
     }
 
     @Override
@@ -63,7 +59,14 @@ class FilePositionStoreEntry implements AutoCloseable {
         if (!Files.exists(storeFile)) {
             Files.createFile(storeFile);
         }
-        return new FilePositionStoreEntry(FileChannel.open(storeFile, SYNC, READ, WRITE), getTimeOfCreation(file));
+
+        try {
+            final FileChannel channel = FileChannel.open(storeFile, SYNC, READ, WRITE);
+            final FileLock lock = channel.tryLock();
+            return new FilePositionStoreEntry(channel, lock, getTimeOfCreation(file));
+        } catch (OverlappingFileLockException e) {
+            throw new IOException(e);
+        }
     }
 
     /**
@@ -85,6 +88,7 @@ class FilePositionStoreEntry implements AutoCloseable {
     }
 
     public Optional<Long> getFilePosition() throws IOException {
+        channel.position(0);
         return readLongFromChannel(channel);
     }
 
@@ -99,7 +103,6 @@ class FilePositionStoreEntry implements AutoCloseable {
 
     public void setFilePosition(long filePosition) throws IOException {
         channel.write(longToBytes(filePosition), BEGINNING_OF_FILE);
-        channel.force(true);
     }
 
     static ByteBuffer longToBytes(long number) {

@@ -35,19 +35,8 @@ public class FileTailerFactory implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileTailerFactory.class);
     private static final int QUEUE_CAPACITY = 500;
-    private static final Optional<FilePositionStore> positionStoreOption;
 
-    static {
-        FilePositionStore tempPositionStore;
-        try {
-            tempPositionStore = FilePositionStore.createUnderDefaultDirectory();
-        } catch (IOException e) {
-            LOGGER.warn("Failed to create file position store", e);
-            tempPositionStore = null;
-        }
-        positionStoreOption = Optional.ofNullable(tempPositionStore);
-    }
-
+    private final Optional<FilePositionStore> positionStoreOption;
     private final Duration fileCheckInterval;
     private final AtomicBoolean isOpen = new AtomicBoolean(true);
     private final LinkedBlockingQueue<String> lineQueue = new LinkedBlockingQueue<>(QUEUE_CAPACITY);
@@ -60,11 +49,27 @@ public class FileTailerFactory implements AutoCloseable {
      */
     public FileTailerFactory(Duration fileCheckInterval) {
         this.fileCheckInterval = fileCheckInterval;
+
+        FilePositionStore tempPositionStore;
+        try {
+            tempPositionStore = FilePositionStore.createUnderDefaultDirectory();
+        } catch (IOException e) {
+            LOGGER.warn("Failed to create file position store", e);
+            tempPositionStore = null;
+        }
+        positionStoreOption = Optional.ofNullable(tempPositionStore);
     }
 
     @Override
     public void close() throws Exception {
         isOpen.set(false);
+        positionStoreOption.ifPresent((filePositionStore) -> {
+            try {
+                filePositionStore.close();
+            } catch (Exception e) {
+                LOGGER.warn("Failed to close file position store", e);
+            }
+        });
     }
 
     public Stream<String> getStream() {

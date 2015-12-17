@@ -12,7 +12,6 @@
 package cern.acet.tracing.input.file;
 
 import static cern.acet.tracing.MessageImpl.ofUntyped;
-import static java.lang.ClassLoader.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -23,7 +22,9 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import cern.acet.tracing.input.file.store.FilePositionStore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +33,15 @@ import cern.acet.tracing.MessageImpl;
 
 public class FileInputTest {
 
-    private static final File INPUT_SAMPLE = new File(getSystemClassLoader().getResource("sample-input.txt")
-            .getFile());
+    private static final File INPUT_SAMPLE;
+
+    static {
+        try {
+            INPUT_SAMPLE = new File(ClassLoader.getSystemClassLoader().getResource("sample-input.txt").getFile());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private FileInput<MessageImpl> fileInput;
     private File dataFile;
@@ -72,9 +80,21 @@ public class FileInputTest {
 
     @Test
     public void canReadGlobbedFiles() {
-        fileInput = createInput(dataFile.toString().substring(0, dataFile.toString().length()) + "*");
+        fileInput = createInput(dataFile.toString() + "*");
         populateWithDelay(INPUT_SAMPLE, dataFile, 10);
         assertTrue(fileInput.get().findAny().get().containsKey("body"));
+    }
+
+    @Test
+    public void canSetStorePositionToFileSize() throws IOException, InterruptedException {
+        fileInput = createInput(dataFile.toString());
+        populateWithDelay(INPUT_SAMPLE, dataFile, 10);
+        Thread.sleep(500); // Wait for the input to read everything
+        fileInput.close();
+
+        Optional<Long> filePosition = FilePositionStore.createUnderDefaultDirectory()
+                .getFilePosition(dataFile.toPath().toAbsolutePath());
+        assertEquals(Optional.of(dataFile.length()), filePosition);
     }
 
     private FileInput<MessageImpl> createInput(File file) {
@@ -105,7 +125,7 @@ public class FileInputTest {
                     Thread.sleep(delay);
                 }
             } catch (Exception e) {
-                System.err.println(e);
+                e.printStackTrace();
             }
         });
         thread.start();

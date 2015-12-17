@@ -14,6 +14,7 @@ package cern.acet.tracing.input.file.tailer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.theories.suppliers.TestedOn;
 import org.mockito.Matchers;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class PositionTailerTest {
                 .when(mockListener)
                 .init(Matchers.any(PositionTailer.class));
         file = Files.createTempFile("tailer", null);
-        tailerBuilder = PositionTailer.builder().setFile(file.toFile()).setFileCheckInterval(Duration.ZERO)
+        tailerBuilder = PositionTailer.builder().setFile(file.toFile()).setFileCheckInterval(Duration.ofMillis(10))
                 .setListener(mockListener);
     }
 
@@ -88,12 +89,20 @@ public class PositionTailerTest {
     }
 
     @Test
+    public void canSetFilePositionAfterRead() throws IOException, InterruptedException {
+        start();
+        String data = write("TestData", file);
+        Thread.sleep(10);
+        verify(mockListener).positionUpdated(data.getBytes().length + 1);
+    }
+
+    @Test
     public void canKeepReadingIfFileRotates() throws Exception {
         Path newFile = Paths.get(file.toString() + "moved");
         start();
         String data = write("testString", file);
         Files.move(file, newFile);
-        Thread.sleep(50);
+        Thread.sleep(200);
         String newData = write("testString2", file);
         verify(mockListener).handle(data);
         verify(mockListener).handle(newData);

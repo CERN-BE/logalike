@@ -34,12 +34,13 @@ import cern.acet.tracing.Message;
  * more files.
  * </p>
  * <p>
- * By default the {@link TailingBuilder} only reads new lines added to the files, starting from the time when the
- * {@link #build()} method is called. It can be set to start at the beginning of the file using
- * {@link #shouldReadFromBeginning(boolean)}.
+ * By default the {@link TailingBuilder} only tails the files, that is only reading new lines that will be added to the
+ * files, starting from the time when the {@link #build()} method is called. It can be set to start at the beginning of
+ * the file instead by using {@link #shouldReadFromBeginning(boolean)}.
  * </p>
  * <p>
- * Files are by default checked every 500 ms. This can be changed via the {@link #setFileCheckInterval(Duration)}.
+ * Files are checked for changes every second by default. This can be changed via the
+ * {@link #setFileCheckInterval(Duration)}.
  * </p>
  *
  * @author jepeders
@@ -95,7 +96,7 @@ public class TailingBuilder<MessageType extends Message<MessageType>> implements
                 .collect(Collectors.toList());
 
         LOGGER.info("Created file input tailing {} file(s): {}", files.size(), files);
-        return new FileInput<MessageType>(this, executor);
+        return new FileInput<>(this, executor);
     }
 
     @Override

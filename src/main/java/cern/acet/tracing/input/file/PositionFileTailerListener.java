@@ -41,6 +41,7 @@ public class PositionFileTailerListener implements PositionTailerListener {
     private final LinkedBlockingQueue<String> queue;
     private final Optional<FilePositionStore> positionStoreOption;
     private File tailingFile;
+    private Long currentPosition;
 
     /**
      * Creates a {@link PositionFileTailerListener} which uses the given queue to enqueue lines.
@@ -95,7 +96,11 @@ public class PositionFileTailerListener implements PositionTailerListener {
 
     @Override
     public void positionUpdated(long position) {
-        positionStoreOption.ifPresent(store -> store.setFilePosition(tailingFile.toPath(), position));
+        // Cache the operation to avoid too many file writes
+        if (currentPosition == null || position != currentPosition) {
+            positionStoreOption.ifPresent(store -> store.setFilePosition(tailingFile.toPath(), position));
+            currentPosition = position;
+        }
     }
 
 }

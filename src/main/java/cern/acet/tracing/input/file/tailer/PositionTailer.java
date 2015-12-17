@@ -224,13 +224,10 @@ public class PositionTailer implements Runnable {
                          */
                         position = 0;
                         reader.seek(position); // cannot be null here
-
                         // Now we can read new lines
                         position = readLines(reader);
                         last = System.currentTimeMillis();
                     }
-                    listener.positionUpdated(position);
-
                 }
                 if (reOpen) {
                     IOUtils.closeQuietly(reader);
@@ -307,6 +304,7 @@ public class PositionTailer implements Runnable {
         }
 
         reader.seek(rePos); // Ensure we can re-read if necessary
+        listener.positionUpdated(pos);
         return rePos;
     }
 
