@@ -1,6 +1,0 @@
-digraph jlogstash {
-	rankdir = "LR";
-	Input -> Filter [label=" Stream<Message>"];
-	Filter -> Filter [label=" Stream<Message>"];
-	Filter -> Output [label=" Stream<Message>"];
-}
