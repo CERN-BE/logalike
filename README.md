@@ -11,6 +11,6 @@ First, pull the project from GitHub:
 Second, fetch the dependencies and build the code. We implemented a gradle script (build.gradle), So if you already have gradle installed, simply run gradle compile.
 
 ##Credits
-Logalike was written by [Gergő Horanyi](https://github.com/ghoranyi) and [Jens E. Pedersen](https://github.com/Jegp) between 2014 and 2016 while working to CERN. Thanks to Vito Baggiolini, [Endre Fejes] (https://github.com/fejese) and [Győrgy Demarcsek](https://github.com/dgyuri92r) for invaluable help with everything from general design issues to implementation details.
+Logalike was written by [Gergő Horányi](https://github.com/ghoranyi) and [Jens E. Pedersen](https://github.com/Jegp) between 2014 and 2016 while working to CERN. Thanks to Vito Baggiolini, [Endre Fejes] (https://github.com/fejese) and [György Demarcsek](https://github.com/dgyuri92r) for invaluable help with everything from general design issues to implementation details.
 
 ![CERN logo](http://design-guidelines.web.cern.ch/sites/design-guidelines.web.cern.ch/files/u6/CERN-logo.jpg)
