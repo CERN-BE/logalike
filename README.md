@@ -12,6 +12,7 @@ Second, fetch the dependencies and build the code. We implemented a gradle scrip
 
 ## Status
 This tool is currently under development, though that shouldn't stop you from tying it out and even use it ([CERN](http://home.cern) already does that in production).
+
 [![Build Status](https://travis-ci.org/CERN-BE/logalike.svg?branch=master)](https://travis-ci.org/CERN-BE/logalike)
 
 ## Credits
