@@ -70,7 +70,7 @@ public class SimpleIntegrationTest {
         Thread thread = new Thread(logalike);
         thread.start();
 
-        thread.join(500);
+        thread.join(1000);
         logalike.close();
         assertNotSame(0, received.get());
     }

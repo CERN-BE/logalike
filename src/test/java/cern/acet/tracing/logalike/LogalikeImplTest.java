@@ -124,7 +124,7 @@ public class LogalikeImplTest {
         setInput(stream);
         Thread t = new Thread(logalike);
         t.start();
-        t.join(200);
+        t.join(400);
         logalike.close();
         t.join();
     }
