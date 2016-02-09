@@ -17,6 +17,12 @@ dependencies {
     testCompile 'junit:junit:4.+'
 }
 
+task fatJar(type: Jar) {
+    manifest.attributes('Main-Class': 'benchmark.Benchmark')
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 test {
     maxParallelForks = 2
 }
