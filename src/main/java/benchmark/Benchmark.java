@@ -42,6 +42,7 @@ public abstract class Benchmark {
         print("Logalike", new LogalikeBenchmark().run(lines));
         System.out.println("Running Logstash 2/2");
         print("Logstash", new LogstashBenchmark(pathToLogstash).run(lines));
+        System.exit(0);
     }
 
     public static void print(String loggingSystem, Optional<BenchmarkResult> resultOption) {
